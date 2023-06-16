@@ -1,0 +1,97 @@
+{% extends 'store/layouts/main.html' %}
+
+{% block content %}
+
+<div class="py-3 bg-light">
+    <div class="container">
+        <a class="text-dark" href="{% url 'home' %}"><b> Home </b></a>
+        <span class="text-primary"><b>/</b></span>
+        <a class="text-dark" href="{% url 'myorders' %}"> <b>My orders</b> </a>
+        <span class="text-primary"><b>/</b></span>
+        <a class="text-dark" href="{% url 'collectionsview' products.category.slug %}"> {{ products.category.name }} /</a>
+        <a class="text-dark" href="{% url 'productview' products.category.slug products.slug %}"> {{ products.name }} </a>
+    </div>
+</div>
+
+<div class="py-2">
+    <div class="container">
+        <div class="row">
+             <div class="col-md-12">
+                <div class=" product_data">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                               
+                                <img src="{{ products.product_image.url }}" class="w-100" alt="image">
+                            </div>
+                            <div class="col-md-7">
+                                <h4 class="mb-0">
+                                  <span class=""><b>{{ products.name }}</b> </span> 
+                                    {% if products.trending %}
+                                        <label style="font-size: 16px;" class="bg-orange float-end badge bg-light text-black trending_tag"> <i class="fa fa-star" aria-hidden="true"></i>
+                                            <i class="fa fa-star" aria-hidden="true"></i>  <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i><small> <i class="fa fa-plus" aria-hidden="true"></i></small></label>
+                                    {% endif %}
+                                </h4>
+                                <hr>
+                                <div class="">
+                                    
+                                     <i class="fa fa-money" aria-hidden="true"></i>   Fee :  ₹ {{ products.selling_price | stringformat:'d' }} / 30 Minute</label>
+                             
+                                </div>
+                               
+                                <p class="mt-3 ">
+                                    <i class="fa fa-language" aria-hidden="true"></i> <small class="w3-opacity">   {{ products.original_price }}</small>
+                                </p>
+                                <p class="mt-3 ">
+                                    <i class="fa fa-bookmark" aria-hidden="true"></i> <small class="w3-opacity">  {{ products.small_description }} </small>
+                                </p> 
+
+                              <div class=".d-none .d-lg-block .d-xl-none .d-sm-none .d-md-block py-1">
+                              
+                               </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-3">
+                                       
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ products.id }}" class="prod_id">
+                                        <label for="Quantity"> <small>1 Quantity = 30 Minutes</small></label>
+                                        <div class="input-group text-center mb-2" style="width:95px;">
+                                            <button class="input-group-text decrement-btn">-</button>
+                                            <input type="text" name="quantity" class="form-control qty-input text-center" value="1" >
+                                            <button class="input-group-text increment-btn">+</button>
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="col-md-9 .d-none .d-sm-block ">
+            
+                                    </div>
+                                    <div class="mt-2 .d-none .d-sm-block .d-md-none">
+                                    {% if products.quantity > 0 %}
+                                    <button type="button" class="btn btn-primary me-2 float-start addToCartBtn">Book <i class="fa fa-shopping-cart"></i></button>
+                               {% endif %}
+                               </div>
+                                </div>
+                                <br>
+                                <img
+                                height="25px"
+                                src="https://i.postimg.cc/BQJ3KdsZ/Main-Logo-8-1.png"
+                                alt="First slide"
+                              />  
+                                <p class="mt-3 w3-opacity px-2">
+                                    {{ products.description }}
+                                </p>
+                            </div>
+
+                          
+                        </div>
+
+                           
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

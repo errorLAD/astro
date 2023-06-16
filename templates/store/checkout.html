@@ -1,0 +1,237 @@
+{% extends 'store/layouts/main.html' %}
+
+{% block content %}
+
+<div class="py-3 bg-light">
+    
+    <div class="container">
+        <a class="text-dark" href="{% url 'home' %}"><b> Home </b></a>
+        <span class="text-primary"><b>/</b></span>
+        <a class="text-dark" href="{% url 'checkout' %}"> <b> Checkout</b> </a>
+    </div>
+</div>
+  
+<div class="container ">
+     
+        
+    <form action="{% url 'placeorder' %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-7">
+                <div class="">
+                    <div class="card-body">
+                        <h6></h6>
+                        <div class="w3-panel">
+                            <h2>   <img
+                                height="60px"
+                                src="https://i.postimg.cc/Y9HbQdzt/Basic-Detailswww.png"
+                                alt="First slide"
+                              />  
+                      
+                          </div>
+                        
+                        <div class="row checkoutform">
+                            <div class="col-md-6">
+                                <label>First Name</label>
+                                <input type="text" required value="{{ request.user.first_name }}" class="form-control" name="fname" placeholder="Enter first name">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Last Name</label>
+                                <input type="text" required value="{{ request.user.last_name }}" class="form-control" name="lname" placeholder="Enter Last name">
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label>Email</label>
+                                <input type="email" required value="{{ request.user.email }}" class="form-control" name="email" placeholder="Enter Email">
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label>Whatsapp Number</label>
+                                <input type="text" required value="{{ userprofile.phone }}" class="form-control" name="phone" placeholder="Whatsapp Number">
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label>More Detail <small>( D.O.B, other )</small></label>
+                                <textarea required class="form-control" name="address" placeholder="More details">{{ userprofile.address }}</textarea>
+                            </div>
+                      
+                            <div class="col-md-6 mt-2">
+                                <label>State</label>
+                                <input type="text" required value="{{ userprofile.state }}" class="form-control" name="state" placeholder="Enter State">
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label>Country</label>
+                                <input type="text" required value="{{ userprofile.country }}" class="form-control" name="country" placeholder="Enter Country">
+                            </div>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="">
+                    
+                    <div class="card-body">
+                        <div class="d-none d-md-block">
+                            <br><br>
+                        <img
+                        height="85px"
+                        src="https://i.postimg.cc/2jdcjDdG/Untitled-design-22.png"
+                        alt="First slide"
+                      /> 
+                      </div>
+                      <div class="d-block d-md-none">
+                        <br>
+                        <img
+                        height="82px"
+                        src="https://i.postimg.cc/6pRJhSJm/Untitled-design-23.png"
+                        alt="First slide"
+                      /> 
+                      </div>
+
+                        {% if cartitems %}
+                            <table class="table table-stripeds table-bordereds">
+                                <thead>
+                                    <tr>
+                                     <br>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in cartitems %}
+                                        <tr>
+                                            <td> 
+                                                <img src="{{ item.product.product_image.url }}" height="50px" class="me-2" width="50px">
+                                                {{ item.product.name }}
+                                            </td>
+                                               <br>
+                                            <td class=""> 
+                                                <br>
+                                                ₹ {{ item.product.selling_price | stringformat:'d' }} </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <h6 class="">Total Fee
+                                <span class="float-end"> ₹ {{ total_price | stringformat:'d' }} </span>    
+                            </h6>
+                            <input type="hidden" value="COD" name="payment_mode">
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-danger w-100 d-block d-md-none  d-none d-md-block"> COD | Place Order </button>
+                                <button type="button" class="btn btn-primary payWithRazorpay w-100 mt-2"> Pay with Razorpay </button>
+                              <br>
+                            </div>
+                        {% else %}
+                            <h4>Your cart is empty</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br><br><br><br><br><br><br>
+    <form>
+
+</div>
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    
+    <script src="https://www.paypal.com/sdk/js?client-id=AZs2Jlax_z6GXz7Xo8iCfBF2PwwbatjT0fG0M--HtqzLpL8UZfLx_zbIB8SupDvz_kH98zh5OwL6QV94&currency=USD"></script>
+    <script>
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect',
+
+            },
+            onClick : function(data, actions) {
+                // My validation here
+                var fname = $("[name='fname']").val();
+                var lname = $("[name='lname']").val();
+                var email = $("[name='email']").val();
+                var phone = $("[name='phone']").val();
+                var address = $("[name='address']").val();
+               
+                var state = $("[name='state']").val();
+                var country = $("[name='country']").val();
+               
+                var token = $("[name='csrfmiddlewaretoken']").val();
+                
+                if(fname == "" || lname == "" || email == "" || phone == "" || address == "" || state == "" || country == "") 
+                {
+                    swal("Alert!", "All fields are mandatory!", "error");
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            },
+          // Sets up the transaction when a payment button is clicked
+          createOrder: function(data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: '0.01', //'{{ total_price | stringformat:'d' }}' // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                }
+              }]
+            });
+          },
+  
+          // Finalize the transaction after payer approval
+          onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+              // Successful capture! For dev/demo purposes:
+                  //console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                  //alert(orderData.id);
+                  //var transaction = orderData.purchase_units[0].payments.captures[0];
+                  //alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+                    var fname = $("[name='fname']").val();
+                    var lname = $("[name='lname']").val();
+                    var email = $("[name='email']").val();
+                    var phone = $("[name='phone']").val();
+                    var address = $("[name='address']").val();
+                   
+                    var state = $("[name='state']").val();
+                    var country = $("[name='country']").val();
+                   
+                    var token = $("[name='csrfmiddlewaretoken']").val();
+                    
+                    data = {
+                        "fname": fname,
+                        "lname": lname,
+                        "email": email,
+                        "phone": phone,
+                        "address": address,
+                        
+                        "state": state,
+                        "country": country,
+                      
+                        "payment_mode": "Paid by PayPal",
+                        "payment_id": orderData.id,
+                        csrfmiddlewaretoken: token
+                    }
+                    $.ajax({
+                        method: "POST",
+                        url: "/place-order",
+                        data: data,
+                        success: function (responsec) {
+                            swal("Congratulations!", responsec.status , "success").then((value) => {
+                                window.location.href = '/my-orders'
+                            });
+                        }
+                    });
+              // When ready to go live, remove the alert and show a success message within this page. For example:
+              // var element = document.getElementById('paypal-button-container');
+              // element.innerHTML = '';
+              // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+              // Or go to another URL:  actions.redirect('thank_you.html');
+            });
+          }
+        }).render('#paypal-button-container');
+  
+      </script>
+{% endblock scripts %}
